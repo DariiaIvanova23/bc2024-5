@@ -99,6 +99,7 @@ app.post('/write', upload.none(), async (req, res) => {
   }
 });
 
+
 app.listen(options.port, options.hostname, () => {
   console.log(`Server is running at http://${options.hostname}:${options.port}`);
 });
