@@ -5,10 +5,12 @@ const path = require('path');
 const multer = require('multer');
 const upload = multer();
 const program = new Command();
+
 program
   .option('--hostname <type>', 'хост сервера')
   .option('--port <type>', 'порт сервера')
   .option('--cache <type>', 'шлях до директорії кешу');
+
 program.parse(process.argv);
 const options = program.opts();
 
@@ -16,9 +18,10 @@ if (!options.hostname || !options.port || !options.cache) {
   console.error('Всі параметри (--hostname, --port, --cache) є обов\'язковими');
   process.exit(1);
 }
+
 const app = express();
 
-app.use(express.json());
+app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
@@ -40,11 +43,11 @@ app.put('/notes/:name', async (req, res) => {
   try {
     const filePath = path.join(options.cache, req.params.name);
     
-    if (!req.body || !req.body.text) {
+    if (!req.body) {
       return res.status(400).send('Missing text in request body');
     }
 
-    await fs.writeFile(filePath, req.body.text);
+    await fs.writeFile(filePath, req.body.toString());
     res.status(200).send('Updated successfully');
   } catch (error) {
     res.status(500).send('Error updating note');
